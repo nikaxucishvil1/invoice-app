@@ -1,41 +1,32 @@
 "use client";
-
-import { Form, Formik } from "formik";
-import { LoginValidationSchema } from "./validation/common";
-import MuiInputWithLabel from "./components/__molecules/InputLabel";
-import Link from "next/link";
+import MuiInputWithLabel from "@/app/components/__molecules/InputLabel";
+import { RegisterValidationSchema } from "@/app/validation/common";
 import axios from "axios";
-import Cookie from "js-cookie";
-import { useState } from "react";
-import { error } from "console";
+import { Form, Formik } from "formik";
+import Link from "next/link";
+import React from "react";
 
-export default function Home() {
+const Signup = () => {
   const initialValues = {
     email: "",
     password: "",
   };
-  const [axiosErr, setAxiosErr] = useState("");
   return (
     <div className="w-full h-screen flex items-center justify-center bg-[#F8F4F0] p-4">
       <Formik
-        validationSchema={LoginValidationSchema}
+        validationSchema={RegisterValidationSchema}
         initialValues={initialValues}
-        onSubmit={async (values, { resetForm }) => {
+        onSubmit={async (values) => {
           try {
-            setAxiosErr("")
-            const data = await axios.post(
-              "http://localhost:3000/auth/signIn",
-              values
-            );
-            const token = data.data.accessToken;
-            if (token) {
-              Cookie.set("userToken", token, { expires: 7 });
-              resetForm();
-              window.location.href = "pages/main";
-            }
-          } catch (error: any) {
-            const axiosError = error.response.data.message;
-            setAxiosErr(axiosError);
+            const { email, password } = values;
+            const res = await axios.post("http://localhost:3000/auth/signUp", {
+              email,
+              password,
+            });
+            console.log(res);
+            window.location.href = "/";
+          } catch (error) {
+            console.log(error);
           }
         }}
       >
@@ -61,7 +52,7 @@ export default function Home() {
               inputType="text"
             />
             <MuiInputWithLabel
-              labelName="Password"
+              labelName="Create Password"
               id="password"
               name="password"
               value={values.password}
@@ -77,22 +68,14 @@ export default function Home() {
               disabled={isSubmitting}
               className="w-full p-4 bg-[#201F24] rounded-lg text-[#FFFF] font-bold"
             >
-              Login
+              Register
             </button>
-            {axiosErr.length !== 0 && (
-              <p className="text-[#FF3939] text-[16px] font-[400] w-full text-center">
-                {axiosErr}
-              </p>
-            )}
             <div className="flex items-center justify-center gap-4 w-full">
               <h1 className="text-[#696868] font-[400] text-[14px]">
-                Need to create an account?
+                Already have an account?
               </h1>
-              <Link
-                href={"pages/signup"}
-                className="text-[14px] text-[#201F24] font-bold"
-              >
-                Sign Up
+              <Link href={"/"} className="text-[14px] text-[#201F24] font-bold">
+                Login
               </Link>
             </div>
           </Form>
@@ -100,4 +83,6 @@ export default function Home() {
       </Formik>
     </div>
   );
-}
+};
+
+export default Signup;
