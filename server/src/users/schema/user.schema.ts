@@ -11,11 +11,11 @@ export class User {
 
   @Prop([
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Invoice',
+      type: mongoose.Types.ObjectId,
+      ref: 'invoice',
     },
   ])
-  invoice: mongoose.Schema.Types.ObjectId[];
+  invoice: mongoose.Types.ObjectId[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

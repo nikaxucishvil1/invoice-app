@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
+import { UsersService } from 'src/users/users.service';
+import { InjectModel } from '@nestjs/mongoose';
+import { Invoice } from './schema/invoice.schema';
+import mongoose, { Model } from 'mongoose';
 
 @Injectable()
 export class InvoiceService {
-  create(createInvoiceDto: CreateInvoiceDto) {
-    return 'This action adds a new invoice';
+  constructor(
+    @InjectModel(Invoice.name) private invoiceModel: Model<Invoice>,
+    private usersService: UsersService,
+  ) {}
+
+  async create(req, createInvoiceDto: CreateInvoiceDto) {
+    if (!req.userId) throw new BadRequestException('no user ID provided');
+    const newInvoiceData = { ...createInvoiceDto, createdBy: req.userId };
+    const newInvoice = await this.invoiceModel.create(newInvoiceData);
+    await this.usersService.addInvoice(req.userId, newInvoice._id);
+    return newInvoice;
   }
 
-  findAll() {
-    return `This action returns all invoice`;
+  findAll(req) {
+    const userId = req.userId;
+    return this.invoiceModel.find({ createdBy: userId }).select('-createdBy');
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} invoice`;
+  async findOne(id) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new NotFoundException('Invalid ID format');
+    }
+    const invoice = await this.invoiceModel.findById(id);
+    if (!invoice) throw new NotFoundException();
+    return invoice;
   }
 
-  update(id: number, updateInvoiceDto: UpdateInvoiceDto) {
-    return `This action updates a #${id} invoice`;
+  update(id, updateInvoiceDto: UpdateInvoiceDto) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new NotFoundException('Invalid ID format');
+    }
+    const invoice = this.findOne(id);
+    if (!invoice) throw new NotFoundException('Invoice not found');
+    return this.invoiceModel.findByIdAndUpdate(id, updateInvoiceDto, {
+      new: true,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} invoice`;
+  async remove(id, req) {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      throw new NotFoundException('Invalid ID format');
+    }
+    const invoice = await this.invoiceModel.findByIdAndDelete(id);
+    if (!invoice) throw new NotFoundException();
+    const user = await this.usersService.findOne(req.userId);
+    if (!user) throw new NotFoundException();
+    await this.usersService.deleteInvoice(user._id, id);
+    return { invoice: invoice, message: 'deleted' };
   }
 }
