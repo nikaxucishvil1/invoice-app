@@ -7,7 +7,6 @@ import Link from "next/link";
 import axios from "axios";
 import Cookie from "js-cookie";
 import { useState } from "react";
-import { error } from "console";
 
 export default function Home() {
   const initialValues = {
@@ -47,7 +46,7 @@ export default function Home() {
           handleChange,
           handleBlur,
         }) => (
-          <Form className="bg-[#FFFF] w-full p-4 flex flex-col items-start justify-center gap-7 rounded-lg">
+          <Form className="bg-[#FFFF] w-full p-4 flex flex-col items-start justify-center gap-7 rounded-lg md:w-[60%] lg:w-[30%]">
             <h1 className="text-[#201F24] font-[900] text-[32px]">Login</h1>
             <MuiInputWithLabel
               labelName="Email"
