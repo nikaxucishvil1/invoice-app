@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
@@ -46,5 +51,12 @@ export class AuthService {
 
   getCurrentUser(req) {
     return this.usersService.findOne(req.userId);
+  }
+
+  async deleteCurrentUser(req) {
+    const userId = req.userId;
+    if (userId) throw new UnauthorizedException();
+    await this.usersService.deleteUser(userId);
+    return { status: 204, message: 'user deleted succesfully' };
   }
 }

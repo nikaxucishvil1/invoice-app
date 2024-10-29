@@ -9,6 +9,7 @@ import { UsersService } from 'src/users/users.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Invoice } from './schema/invoice.schema';
 import mongoose, { Model } from 'mongoose';
+import { QueryParamsDto } from './dto/query-params.dto';
 
 @Injectable()
 export class InvoiceService {
@@ -25,9 +26,15 @@ export class InvoiceService {
     return newInvoice;
   }
 
-  findAll(req) {
+  findAll(req, queryParams: QueryParamsDto) {
     const userId = req.userId;
-    return this.invoiceModel.find({ createdBy: userId }).select('-createdBy');
+    let { page, take } = queryParams;
+    take = take > 30 ? 30 : take;
+    return this.invoiceModel
+      .find({ createdBy: userId })
+      .skip((page - 1) * take)
+      .limit(take)
+      .select('-createdBy');
   }
 
   async findOne(id) {

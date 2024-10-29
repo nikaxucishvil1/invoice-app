@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { User } from './schema/user.schema';
@@ -60,5 +59,11 @@ export class UsersService {
       { invoice: updatedInvoices },
       { new: true },
     );
+  }
+
+  async deleteUser(userId) {
+    const user = await this.findOne(userId);
+    if (!user) throw new NotFoundException();
+    return this.userModel.findByIdAndDelete(userId);
   }
 }

@@ -8,11 +8,13 @@ import {
   Delete,
   UseGuards,
   Req,
+  Query,
 } from '@nestjs/common';
 import { InvoiceService } from './invoice.service';
 import { CreateInvoiceDto } from './dto/create-invoice.dto';
 import { UpdateInvoiceDto } from './dto/update-invoice.dto';
 import { AuthGuard } from 'src/auth/guards/auth.guard';
+import { QueryParamsDto } from './dto/query-params.dto';
 
 @Controller('invoice')
 export class InvoiceController {
@@ -26,8 +28,8 @@ export class InvoiceController {
 
   @Get()
   @UseGuards(AuthGuard)
-  findAll(@Req() req) {
-    return this.invoiceService.findAll(req);
+  findAll(@Req() req,@Query() queryParams: QueryParamsDto) {
+    return this.invoiceService.findAll(req,queryParams);
   }
 
   @Get(':id')
