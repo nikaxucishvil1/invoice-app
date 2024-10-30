@@ -1,10 +1,17 @@
+import { useRouter } from "next/navigation";
+
 interface InvoiceListItemIF {
   invoice: Invoice;
 }
 const InvoiceListItem = (props: InvoiceListItemIF) => {
   const { invoice } = props;
+  const router = useRouter();
+
   return (
-    <div className="w-full bg-[#FFFF] p-4 flex rounded-lg flex-col gap-4 justify-center">
+    <button
+      className="w-full bg-[#FFFF] p-4 flex rounded-lg flex-col gap-4 justify-center"
+      onClick={() => router.push(`./Single?id=${invoice._id}`)}
+    >
       <header className="flex items-center justify-between w-full">
         <h1 className="text-[#0C0E16] text-[15px] font-bold">
           #{invoice._id.slice(6, 12)}
@@ -13,7 +20,7 @@ const InvoiceListItem = (props: InvoiceListItemIF) => {
           {invoice.billTo.clientName}
         </h1>
       </header>
-      <footer className="flex items-center justify-between">
+      <footer className="flex items-center justify-between w-full">
         <div>
           <h1 className="text-[13px] text-[#888EB0] font-[500]">
             {invoice.invoiceDate}
@@ -33,7 +40,7 @@ const InvoiceListItem = (props: InvoiceListItemIF) => {
           <p> {invoice.status}</p>
         </div>
       </footer>
-    </div>
+    </button>
   );
 };
 

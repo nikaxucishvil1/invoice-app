@@ -2,9 +2,6 @@
 import { FaPlus } from "react-icons/fa6";
 import InvoiceListItem from "../__atoms/InvoiceListItem";
 
-interface invoiceList {
-  invoices: Invoice[];
-}
 
 const InvoiceList = (props: invoiceList) => {
   const { invoices } = props;
@@ -14,7 +11,7 @@ const InvoiceList = (props: invoiceList) => {
         <div className="flex flex-col">
           <h1 className="text-[24px] text-[#0C0E16] font-bold">Invoices</h1>
           <p className="text-[#888EB0] text-[13px] font-[500]">
-            {invoices.length} invoices
+            {invoices.length > 0 ? invoices.length: "No"} invoices
           </p>
         </div>
         <div className="flex items-center gap-5">

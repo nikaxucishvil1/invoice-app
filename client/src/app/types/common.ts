@@ -31,3 +31,6 @@ interface Invoice {
   _id: string;
   __v: number;
 }
+interface invoiceList {
+  invoices: Invoice[];
+}

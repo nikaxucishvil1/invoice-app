@@ -5,7 +5,7 @@ import axios from "axios";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const getToken = async (tokenValue: string) => {
+export const getToken = async (tokenValue: string) => {
   const cookieStore = cookies();
   const userToken = cookieStore.get(tokenValue);
   return userToken?.value;
@@ -18,8 +18,7 @@ const getData = async (token: string) => {
       headers: { Authorization: authString },
     });
     return res.data;
-  } catch (error: any) {
-    console.log(error);
+  } catch (error) {
     return null;
   }
 };
@@ -35,7 +34,7 @@ const Main = async () => {
       <div>
         <MainHeader />
       </div>
-      {invoices.length > 0 ? <InvoiceList invoices={invoices} /> : <EmptyInvoice />}
+      {invoices.length > 0 ? <InvoiceList invoices={invoices} /> : <EmptyInvoice invoices={invoices} />}
     </div>
   );
 };
