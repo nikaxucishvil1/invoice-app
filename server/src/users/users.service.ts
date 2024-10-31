@@ -8,6 +8,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { User } from './schema/user.schema';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -18,11 +19,15 @@ export class UsersService {
   }
 
   findOne(id) {
-    return this.userModel.findById(id);
+    const user = this.userModel.findById(id);
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   findQuery(query) {
-    return this.userModel.findOne(query).select('+password');
+    const user = this.userModel.findOne(query).select('+password');
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   async addInvoice(
@@ -65,5 +70,12 @@ export class UsersService {
     const user = await this.findOne(userId);
     if (!user) throw new NotFoundException();
     return this.userModel.findByIdAndDelete(userId);
+  }
+  async updateUser(userId, updateUserDto: UpdateUserDto) {
+    const user = await this.findOne(userId);
+    if (!user) throw new NotFoundException();
+    return this.userModel.findByIdAndUpdate(userId, updateUserDto, {
+      new: true,
+    });
   }
 }

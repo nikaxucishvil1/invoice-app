@@ -9,6 +9,7 @@ import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { UsersService } from 'src/users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignInDto } from './dto/signIn.dto';
+import { UpdateUserDto } from 'src/users/dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -47,6 +48,10 @@ export class AuthService {
         expiresIn: expire,
       }),
     };
+  }
+
+  async updateUser(req, updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(req.userId, updateUserDto);
   }
 
   getCurrentUser(req) {

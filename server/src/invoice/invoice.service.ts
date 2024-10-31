@@ -18,6 +18,7 @@ export class InvoiceService {
     private usersService: UsersService,
   ) {}
 
+  
   async create(req, createInvoiceDto: CreateInvoiceDto) {
     if (!req.userId) throw new BadRequestException('no user ID provided');
     const newInvoiceData = { ...createInvoiceDto, createdBy: req.userId };
@@ -61,10 +62,10 @@ export class InvoiceService {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       throw new NotFoundException('Invalid ID format');
     }
-    const invoice = await this.invoiceModel.findByIdAndDelete(id);
-    if (!invoice) throw new NotFoundException();
     const user = await this.usersService.findOne(req.userId);
     if (!user) throw new NotFoundException();
+    const invoice = await this.invoiceModel.findByIdAndDelete(id);
+    if (!invoice) throw new NotFoundException();
     await this.usersService.deleteInvoice(user._id, id);
     return { invoice: invoice, message: 'deleted' };
   }
